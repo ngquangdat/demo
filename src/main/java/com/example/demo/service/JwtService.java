@@ -10,7 +10,7 @@ import java.util.Date;
 @Service
 public class JwtService {
     private static final String SECRET_KEY = "11111111111111111111111111111111";
-    private static final Long TIME_EXPIRATION = 20000L;
+    private static final Long TIME_EXPIRATION = 200000L;
 
     public String generateTokenLogin(User user) {
         return Jwts.builder()

@@ -26,10 +26,17 @@ public class UserService {
                 return user;
             }
         }
-        throw new BusinessException(ResponseStatusConstant.LOGIN_FAILED, null, null);
+        throw new BusinessException(ResponseStatusConstant.SIGNIN_FAILED, null, null);
     }
 
-    public String login(String username, String password){
+    public User createUser(String username, String password){
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(BCryptUtil.hash(password));
+        return userRepository.save(user);
+    }
+
+    public String signIn(String username, String password){
         User user = getUser(username, password);
         return jwtService.generateTokenLogin(user);
     }

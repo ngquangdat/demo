@@ -1,8 +1,10 @@
 package com.example.demo.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @Table
@@ -10,7 +12,7 @@ import java.util.Date;
 public class User {
     @Id
     @Column
-    private Integer id;
+    private String id;
 
     @Column
     private String name;
@@ -18,6 +20,7 @@ public class User {
     @Column
     private String username;
 
+    @JsonIgnore
     @Column
     private String password;
 
@@ -38,6 +41,7 @@ public class User {
 
     @PrePersist
     public void prePersist(){
+        id = UUID.randomUUID().toString();
         createdTime = new Date();
     }
 

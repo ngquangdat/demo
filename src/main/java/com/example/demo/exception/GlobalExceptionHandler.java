@@ -15,7 +15,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity handleException(Exception e) {
         if(e instanceof BusinessException){
-            log.info(e.getMessage(), e);
             BusinessException businessException = (BusinessException) e;
             GeneralResponse response = ResponseFactory.fail(businessException.getCode(), businessException.getData());
             response.setData(businessException.getData());

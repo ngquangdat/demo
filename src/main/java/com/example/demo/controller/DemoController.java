@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
 public class DemoController {
     @Autowired
     private JwtService jwtService;
@@ -28,12 +27,6 @@ public class DemoController {
         int a = 0;
         int b= a/0;
         return "Hello world!";
-    }
-
-    @PostMapping(value = "/login")
-    public Object token(@RequestParam(name = "username") String username,
-                        @RequestParam(name = "password") String password) {
-        return ResponseFactory.success(userService.login(username, password));
     }
 
     @GetMapping("/city")

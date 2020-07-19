@@ -27,7 +27,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
-        if (requestWrapper.getRequestURI().contains("login")) {
+        if (requestWrapper.getRequestURI().contains("sign-in")
+            || requestWrapper.getRequestURI().contains("sign-up")) {
             filterChain.doFilter(requestWrapper, responseWrapper);
             responseWrapper.copyBodyToResponse();
             return;

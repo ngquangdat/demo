@@ -1,5 +1,5 @@
 CREATE TABLE `item` (
-  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `id` varchar(36) PRIMARY KEY,
   `name` varchar(3000),
   `description` varchar(5000),
   `unsigned_name` varchar(3000),
@@ -10,7 +10,7 @@ CREATE TABLE `item` (
   `status` int,
   `ward_id` int,
   `type` int,
-  `user_id` bigint,
+  `user_id` varchar(36),
   `contact` varchar(1000),
   `picked_time` datetime,
   `lost_time` datetime,
@@ -30,7 +30,7 @@ CREATE TABLE `item_type` (
 );
 
 CREATE TABLE `user` (
-  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `id` varchar(36) PRIMARY KEY,
   `username` varchar(1000),
   `password` varchar(1000),
   `name` varchar(1000),
