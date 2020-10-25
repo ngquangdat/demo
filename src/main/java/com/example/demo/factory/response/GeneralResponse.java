@@ -1,5 +1,6 @@
 package com.example.demo.factory.response;
 
+import com.example.demo.util.TextUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,11 +12,6 @@ public class GeneralResponse<T> {
 
     @Override
     public String toString() {
-        try {
-            return new com.fasterxml.jackson.databind.ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-            log.warn("Error toString");
-        }
-        return "";
+        return TextUtil.gson.toJson(this);
     }
 }
