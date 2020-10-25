@@ -1,5 +1,6 @@
 package com.example.demo.exception;
 
+import com.example.demo.constant.ResponseStatusConstant;
 import com.example.demo.factory.response.GeneralResponse;
 import com.example.demo.factory.response.ResponseFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +14,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity handleException(Exception e) {
-        if(e instanceof BusinessException){
+    public ResponseEntity<Object> handleException(Exception e) {
+        GeneralResponse<Object> response;
+        if (e instanceof BusinessException) {
             BusinessException businessException = (BusinessException) e;
-            GeneralResponse response = ResponseFactory.fail(businessException.getCode(), businessException.getData());
-            response.setData(businessException.getData());
-            return new ResponseEntity(response, HttpStatus.OK);
+            response = ResponseFactory.fail(businessException.getCode(), businessException.getData());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
         log.error(e.getMessage(), e);
-        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        response = ResponseFactory.fail(ResponseStatusConstant.INTERNAL_SERVER_ERROR, null);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
