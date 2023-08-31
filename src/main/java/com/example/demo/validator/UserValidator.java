@@ -18,12 +18,12 @@ public class UserValidator {
 
     public void validateSignUp(String username, String password){
         if(StringUtils.isBlank(username) || StringUtils.isBlank(password)){
-            throw new BusinessException(ResponseStatusConstant.BAD_REQUEST, null, null);
+            throw new BusinessException(ResponseStatusConstant.BAD_REQUEST, null);
         }
 
         Optional<Account> opUser = userRepository.getByUsername(username);
         if(opUser.isPresent()){
-            throw new BusinessException(ResponseStatusConstant.USER_EXISTED, null, null);
+            throw new BusinessException(ResponseStatusConstant.USER_EXISTED, null);
         }
     }
 }

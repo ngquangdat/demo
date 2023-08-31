@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
                 return account;
             }
         }
-        throw new BusinessException(ResponseStatusConstant.SIGNIN_FAILED, null, null);
+        throw new BusinessException(ResponseStatusConstant.SIGNIN_FAILED, null);
     }
 
     public Account createUser(String username, String password, String phone, Integer point){
