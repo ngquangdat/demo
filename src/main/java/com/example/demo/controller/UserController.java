@@ -16,16 +16,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserValidator userValidator;
+
     @PostMapping(value = "/sign-up")
     public Object signUp(@RequestParam(name = "username") String username,
-                        @RequestParam(name = "password") String password) {
-        UserValidator.validateSignUp(username, password);
-        return ResponseFactory.success(userService.createUser(username, password));
+                         @RequestParam(name = "password") String password,
+                         @RequestParam(name = "phone") String phone,
+                         @RequestParam(name = "point") Integer point) {
+        userValidator.validateSignUp(username, password);
+        return ResponseFactory.success(userService.createUser(username, password, phone, point));
     }
 
     @PostMapping(value = "/sign-in")
     public Object signIn(@RequestParam(name = "username") String username,
-                        @RequestParam(name = "password") String password) {
+                         @RequestParam(name = "password") String password) {
         return ResponseFactory.success(userService.signIn(username, password));
     }
 }

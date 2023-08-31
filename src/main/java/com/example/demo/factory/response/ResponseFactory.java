@@ -31,7 +31,7 @@ public class ResponseFactory {
         return response;
     }
 
-    private static String getMessage(String code){
+    public static String getMessage(String code){
         Locale locale = LocaleContextHolder.getLocale();
         return messageSource.getMessage(code, null, locale);
     }

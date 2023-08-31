@@ -1,27 +1,30 @@
 package com.example.demo.filter;
 
+import com.example.demo.constant.ResponseStatusConstant;
+import com.example.demo.factory.response.GeneralResponse;
+import com.example.demo.factory.response.ResponseFactory;
+import com.example.demo.factory.response.Status;
 import com.example.demo.service.JwtService;
+import com.example.demo.util.TextUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
 @Configuration
-@Order(2)
 public class AuthorizationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -42,16 +45,17 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
 
         String authorization = requestWrapper.getHeader(HttpHeaders.AUTHORIZATION);
-        if (!StringUtils.isEmpty(authorization)) {
+        if (StringUtils.isNotBlank(authorization)) {
             String token = authorization.substring(7);
-            if (!jwtService.validateJwtToken(token)) {
-                sendError(responseWrapper);
+            String validate = jwtService.validateJwtToken(token);
+            if (validate != null) {
+                sendError(responseWrapper, validate);
             } else {
                 filterChain.doFilter(requestWrapper, responseWrapper);
                 responseWrapper.copyBodyToResponse();
             }
         } else {
-            sendError(responseWrapper);
+            sendError(responseWrapper, ResponseFactory.getMessage(ResponseStatusConstant.NOT_AUTH));
         }
     }
 
@@ -64,10 +68,18 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         return false;
     }
 
-    private void sendError(ContentCachingResponseWrapper responseWrapper) {
+    private void sendError(ContentCachingResponseWrapper responseWrapper, String messager) {
         try {
             responseWrapper.setStatus(HttpStatus.FORBIDDEN.value());
             responseWrapper.setContentType("application/json; charset=utf-8");
+            responseWrapper.setCharacterEncoding("UTF-8");
+            GeneralResponse<Object> response = new GeneralResponse<>();
+            Status status = new Status();
+            status.setCode(ResponseStatusConstant.NOT_AUTH);
+            status.setMessage(messager);
+            response.setStatus(status);
+
+            responseWrapper.getWriter().print(TextUtil.gson.toJson(response));
             responseWrapper.copyBodyToResponse();
         } catch (IOException e) {
             log.error(e.getMessage());
