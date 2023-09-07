@@ -60,7 +60,7 @@ public class AccountServiceImpl implements UserService {
                 .orElseThrow(() -> new BusinessException(ResponseStatusConstant.SIGNIN_FAILED, null));
         return SignInResponse.builder()
                 .accessToken(jwtService.generateTokenLogin(account))
-                .refreshToken(refreshTokenService.createRefreshToken(account.getId()))
+                .refreshToken(refreshToken)
                 .build();
     }
 }
