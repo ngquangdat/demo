@@ -89,8 +89,8 @@ public class JwtServiceImpl implements JwtService {
 
     public String generateTokenLogin(Account account) {
         // Asymmetric encryption
-//        Algorithm algorithm = Algorithm.RSA256(readPublicKey(), readPrivateKey());
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        Algorithm algorithm = Algorithm.RSA256(readPublicKey(), readPrivateKey());
+//        Algorithm algorithm = Algorithm.HMAC256(secretKey);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expiredTime);
         return JWT.create()
@@ -105,8 +105,8 @@ public class JwtServiceImpl implements JwtService {
     public String validateJwtToken(String token) {
         try {
             // Asymmetric encryption
-//            Algorithm algorithm = Algorithm.RSA256(readPublicKey(), null);
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            Algorithm algorithm = Algorithm.RSA256(readPublicKey(), null);
+//            Algorithm algorithm = Algorithm.HMAC256(secretKey);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("datnq")
                     .build();
