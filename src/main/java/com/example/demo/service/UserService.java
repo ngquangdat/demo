@@ -10,4 +10,6 @@ public interface UserService {
     Account createUser(String username, String password, String phone, Integer point);
 
     SignInResponse signIn(String username, String password);
+
+    SignInResponse signInRefreshToken(String accountId, String refreshToken);
 }

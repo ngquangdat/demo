@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.factory.response.ResponseFactory;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.RefreshTokenRepository;
 import com.example.demo.service.JwtService;
-import com.example.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -16,16 +16,24 @@ public class DemoController {
     private JwtService jwtService;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @GetMapping
     public String hello() {
         return "Hello world!";
     }
 
-    @GetMapping("/user")
-    public Object getUsers() {
-        return ResponseFactory.success(userRepository.findAll());
+    @GetMapping("/account")
+    public Object getAccounts() {
+        return ResponseFactory.success(accountRepository.findAll());
+    }
+
+    @GetMapping("/token")
+    public Object getTokens() {
+        return ResponseFactory.success(refreshTokenRepository.findAll());
     }
 
     @GetMapping("/payload")
