@@ -121,7 +121,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public Map<String, Object> getPayload(String token) {
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        // Asymmetric encryption
+        Algorithm algorithm = Algorithm.RSA256(readPublicKey(), null);
+//        Algorithm algorithm = Algorithm.HMAC256(secretKey);
         JWTVerifier verifier = JWT.require(algorithm)
                 .withIssuer("datnq")
                 .build();
