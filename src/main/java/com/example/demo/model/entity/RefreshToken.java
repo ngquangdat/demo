@@ -14,7 +14,7 @@ public class RefreshToken {
     private long id;
 
     @Column
-    private String token;
+    private String tokenId;
 
     @Column
     private String accountId;

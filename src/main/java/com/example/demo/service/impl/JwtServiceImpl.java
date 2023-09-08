@@ -2,8 +2,10 @@ package com.example.demo.service.impl;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.RegisteredClaims;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.demo.model.entity.Account;
@@ -102,6 +104,16 @@ public class JwtServiceImpl implements JwtService {
                 .sign(algorithm);
     }
 
+    @Override
+    public String generateRefreshToken(Calendar calendar, String refreshTokenId) {
+        Algorithm algorithm = Algorithm.RSA256(readPublicKey(), readPrivateKey());
+        return JWT.create()
+                .withJWTId(refreshTokenId)
+                .withIssuer("datnq")
+                .withExpiresAt(calendar.getTime())
+                .sign(algorithm);
+    }
+
     public String validateJwtToken(String token) {
         try {
             // Asymmetric encryption
@@ -112,6 +124,24 @@ public class JwtServiceImpl implements JwtService {
                     .build();
 
             verifier.verify(token);
+        } catch (JWTVerificationException exception){
+            log.warn("validateJwtToken fail", exception);
+            return exception.getMessage();
+        }
+        return null;
+    }
+
+    @Override
+    public String validateJwtTokenExpired(String token) {
+        try {
+            Algorithm algorithm = Algorithm.RSA256(readPublicKey(), null);
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer("datnq")
+                    .build();
+
+            verifier.verify(token);
+        } catch (TokenExpiredException ignored) {
+            return null;
         } catch (JWTVerificationException exception){
             log.warn("validateJwtToken fail", exception);
             return exception.getMessage();
@@ -133,6 +163,18 @@ public class JwtServiceImpl implements JwtService {
         Map<String, Object> resultMap = new HashMap<>();
         map.forEach((k,v) -> resultMap.put(k, v.asString() == null ? v.asLong() : v.asString()));
         return resultMap;
+    }
+
+    @Override
+    public String getJti(String token) {
+        Algorithm algorithm = Algorithm.RSA256(readPublicKey(), null);
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withIssuer("datnq")
+                .build();
+
+        DecodedJWT decodedJWT = verifier.verify(token);
+        Map<String, Claim> map = decodedJWT.getClaims();
+        return map.get(RegisteredClaims.JWT_ID).asString();
     }
 
 }

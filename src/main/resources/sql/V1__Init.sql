@@ -14,7 +14,7 @@ CREATE TABLE `account`
 CREATE TABLE `refresh_token`
 (
     `id`           bigint,
-    `token`        varchar(1000),
+    `token_id`        varchar(1000),
     `account_id`   varchar(36),
     `expired_time` datetime
 );

@@ -6,10 +6,8 @@ import com.example.demo.service.RefreshTokenService;
 import com.example.demo.service.UserService;
 import com.example.demo.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/v1")
@@ -40,8 +38,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/refresh-token")
-    public Object refreshToken(@RequestParam(name = "refreshToken") String refreshToken) {
-        RefreshToken token = refreshTokenService.isValidRefreshToken(refreshToken);
+    public Object refreshToken(@RequestParam(name = "refreshToken") String refreshToken,
+                               @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+        RefreshToken token = refreshTokenService.isValidRefreshToken(refreshToken, authorization);
         return ResponseFactory.success(userService.signInRefreshToken(token.getAccountId(), refreshToken));
     }
 }
