@@ -60,12 +60,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean isAcceptedUri(String uri) {
-        for (String acceptedUri : notNeedAuthorizationUri) {
-            if (uri.contains(acceptedUri)) {
-                return true;
-            }
-        }
-        return false;
+//        for (String acceptedUri : notNeedAuthorizationUri) {
+//            if (uri.contains(acceptedUri)) {
+//                return true;
+//            }
+//        }
+//        return false;
+        return true;
     }
 
     private void sendError(ContentCachingResponseWrapper responseWrapper, String messager) {
