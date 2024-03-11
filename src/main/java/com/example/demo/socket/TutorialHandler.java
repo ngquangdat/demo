@@ -72,18 +72,18 @@ public class TutorialHandler implements WebSocketHandler {
         long requestTime = StringUtils.isBlank(requestTimeStr) ? 0L : Long.parseLong(requestTimeStr);
         log.info("Session {} request time {}", session.getId(), requestTime);
         if (System.currentTimeMillis() - requestTime > 10000) {
-            session.getAttributes().put("CLOSE_SESSION", 1);
+            session.getAttributes().put("EXPIRED", 1);
         } else {
             session.sendMessage(msg);
         }
     }
 
     private void closeSession() {
-        List<WebSocketSession> expiresSessions = sessions.stream()
-                .filter(s -> s.getAttributes().get("CLOSE_SESSION") != null)
+        List<WebSocketSession> expiredSessions = sessions.stream()
+                .filter(s -> s.getAttributes().get("EXPIRED") != null)
                 .toList();
-        sessions.removeAll(expiresSessions);
-        expiresSessions.forEach(s -> {
+        sessions.removeAll(expiredSessions);
+        expiredSessions.forEach(s -> {
             try {
                 s.close();
             } catch (IOException e) {
