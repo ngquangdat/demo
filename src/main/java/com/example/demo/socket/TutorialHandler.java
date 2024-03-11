@@ -2,6 +2,7 @@ package com.example.demo.socket;
 
 import com.example.demo.ws.proto.HelloRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.socket.*;
 
@@ -13,21 +14,23 @@ import java.util.List;
 @Slf4j
 public class TutorialHandler implements WebSocketHandler {
 
-    private List<WebSocketSession> sessions = new ArrayList<>();
+    private final List<WebSocketSession> sessions = new ArrayList<>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         log.info("Connection established on session: {}", session.getId());
-        this.sessions.add(session);
+        sessions.add(session);
+        session.getAttributes().put("REQUEST_TIME", System.currentTimeMillis());
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-        String tutorial = (String) message.getPayload();
-        log.info("Message: {}", tutorial);
-        session.sendMessage(new TextMessage("Started processing tutorial: " + session + " - " + tutorial));
+        String data = (String) message.getPayload();
+        log.info("Message: {}", data);
+        session.getAttributes().put("REQUEST_TIME", System.currentTimeMillis());
+        session.sendMessage(new TextMessage("Started processing tutorial: " + session + " - " + data));
         Thread.sleep(1000);
-        session.sendMessage(new TextMessage("Completed processing tutorial: " + tutorial));
+        session.sendMessage(new TextMessage("Completed processing tutorial: " + data));
 
     }
 
@@ -40,7 +43,7 @@ public class TutorialHandler implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
         log.info("Connection closed on session: {} with status: {}", session.getId(), closeStatus.getCode());
-        this.sessions.remove(session);
+        sessions.remove(session);
     }
 
     @Override
@@ -51,18 +54,34 @@ public class TutorialHandler implements WebSocketHandler {
 
     @Scheduled(fixedRate = 3000)
     public void sendMessage() throws IOException {
-        log.info("Scheduled sendMessage {}", this.sessions.size());
-        for (WebSocketSession sess : sessions) {
-//			TextMessage msg = new TextMessage("Hello from " + sess.getId());
-//			sess.sendMessage(msg);
-
-            HelloRequest helloRequest = HelloRequest.newBuilder()
-                    .setTime(123456789)
-                    .setMessage("Hello from " + sess.getId())
-                    .build();
-            String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
-            TextMessage msg = new TextMessage("message|" + asBase64);
-            sess.sendMessage(msg);
+        log.info("Scheduled sendMessage {}", sessions.size());
+        List<WebSocketSession> expiredSessions = new ArrayList<>();
+        for (WebSocketSession session : sessions) {
+//			TextMessage msg = new TextMessage("Hello from " + session.getId());
+//			session.sendMessage(msg);
+            String requestTimeStr = String.valueOf(session.getAttributes().get("REQUEST_TIME"));
+            long requestTime = StringUtils.isBlank(requestTimeStr) ? 0L : Long.parseLong(requestTimeStr);
+            log.info("Session {} request time {}", session.getId(), requestTime);
+            if (System.currentTimeMillis() - requestTime > 10000) {
+                expiredSessions.add(session);
+            } else {
+                HelloRequest helloRequest = HelloRequest.newBuilder()
+                        .setTime(123456789)
+                        .setMessage("Hello from " + session.getId())
+                        .build();
+                String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
+                TextMessage msg = new TextMessage("message|" + asBase64);
+                session.sendMessage(msg);
+            }
         }
+
+        expiredSessions.forEach(expiredSession -> {
+            sessions.remove(expiredSession);
+            try {
+                expiredSession.close();
+            } catch (IOException e) {
+                log.error("Close session {} error", expiredSession.getId(), e);
+            }
+        });
     }
 }
