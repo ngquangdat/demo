@@ -54,7 +54,7 @@ public class TutorialHandler implements WebSocketHandler {
 
     @Scheduled(fixedRate = 3000)
     public void sendMessage() throws IOException {
-        log.info("Scheduled sendMessage {}", sessions.size());
+//        log.info("Scheduled sendMessage {}", sessions.size());
         for (WebSocketSession session : sessions) {
             HelloRequest helloRequest = HelloRequest.newBuilder()
                     .setTime(123456789)
