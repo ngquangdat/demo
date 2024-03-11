@@ -7,6 +7,7 @@ import org.springframework.web.socket.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Slf4j
@@ -63,8 +64,9 @@ public class TutorialHandler implements WebSocketHandler {
 					.setTime(123456789)
 					.setMessage("Hello from " + sess.getId())
 					.build();
-			BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
-			sess.sendMessage(binaryMessage);
+			String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
+			TextMessage msg = new TextMessage("message|" + asBase64);
+			sess.sendMessage(msg);
 		}
 	}
 }
