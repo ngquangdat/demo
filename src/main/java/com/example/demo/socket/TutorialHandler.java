@@ -55,12 +55,7 @@ public class TutorialHandler implements WebSocketHandler {
     @Scheduled(fixedRate = 3000)
     public void sendMessage() throws IOException {
         log.info("Scheduled sendMessage {}", sessions.size());
-        List<WebSocketSession> expiredSessions = new ArrayList<>();
         for (WebSocketSession session : sessions) {
-//			TextMessage msg = new TextMessage("Hello from " + session.getId());
-//			session.sendMessage(msg);
-
-
             HelloRequest helloRequest = HelloRequest.newBuilder()
                     .setTime(123456789)
                     .setMessage("Hello from " + session.getId())
@@ -69,6 +64,7 @@ public class TutorialHandler implements WebSocketHandler {
             TextMessage msg = new TextMessage("message|" + asBase64);
             sendMessage(session, msg);
         }
+        closeSession();
     }
 
     private void sendMessage(WebSocketSession session, TextMessage msg) throws IOException {
@@ -76,10 +72,23 @@ public class TutorialHandler implements WebSocketHandler {
         long requestTime = StringUtils.isBlank(requestTimeStr) ? 0L : Long.parseLong(requestTimeStr);
         log.info("Session {} request time {}", session.getId(), requestTime);
         if (System.currentTimeMillis() - requestTime > 10000) {
-            sessions.remove(session);
-            session.close();
+            session.getAttributes().put("CLOSE_SESSION", 1);
         } else {
             session.sendMessage(msg);
         }
+    }
+
+    private void closeSession() {
+        List<WebSocketSession> expiresSessions = sessions.stream()
+                .filter(s -> s.getAttributes().get("CLOSE_SESSION") != null)
+                .toList();
+        sessions.removeAll(expiresSessions);
+        expiresSessions.forEach(s -> {
+            try {
+                s.close();
+            } catch (IOException e) {
+                log.error("Close session {} error", s.getId(), e);
+            }
+        });
     }
 }
