@@ -59,29 +59,27 @@ public class TutorialHandler implements WebSocketHandler {
         for (WebSocketSession session : sessions) {
 //			TextMessage msg = new TextMessage("Hello from " + session.getId());
 //			session.sendMessage(msg);
-            String requestTimeStr = String.valueOf(session.getAttributes().get("REQUEST_TIME"));
-            long requestTime = StringUtils.isBlank(requestTimeStr) ? 0L : Long.parseLong(requestTimeStr);
-            log.info("Session {} request time {}", session.getId(), requestTime);
-            if (System.currentTimeMillis() - requestTime > 10000) {
-                expiredSessions.add(session);
-            } else {
-                HelloRequest helloRequest = HelloRequest.newBuilder()
-                        .setTime(123456789)
-                        .setMessage("Hello from " + session.getId())
-                        .build();
-                String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
-                TextMessage msg = new TextMessage("message|" + asBase64);
-                session.sendMessage(msg);
-            }
-        }
 
-        expiredSessions.forEach(expiredSession -> {
-            sessions.remove(expiredSession);
-            try {
-                expiredSession.close();
-            } catch (IOException e) {
-                log.error("Close session {} error", expiredSession.getId(), e);
-            }
-        });
+
+            HelloRequest helloRequest = HelloRequest.newBuilder()
+                    .setTime(123456789)
+                    .setMessage("Hello from " + session.getId())
+                    .build();
+            String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
+            TextMessage msg = new TextMessage("message|" + asBase64);
+            sendMessage(session, msg);
+        }
+    }
+
+    private void sendMessage(WebSocketSession session, TextMessage msg) throws IOException {
+        String requestTimeStr = String.valueOf(session.getAttributes().get("REQUEST_TIME"));
+        long requestTime = StringUtils.isBlank(requestTimeStr) ? 0L : Long.parseLong(requestTimeStr);
+        log.info("Session {} request time {}", session.getId(), requestTime);
+        if (System.currentTimeMillis() - requestTime > 10000) {
+            sessions.remove(session);
+            session.close();
+        } else {
+            session.sendMessage(msg);
+        }
     }
 }
