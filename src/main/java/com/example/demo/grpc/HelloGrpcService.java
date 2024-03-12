@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @GrpcService
 public class HelloGrpcService extends HelloServiceGrpc.HelloServiceImplBase {
 
-    List<StreamObserver<HelloResponse>> observerList = new ArrayList<>();
+    private final List<StreamObserver<HelloResponse>> observerList = new ArrayList<>();
 
 
     @Override
