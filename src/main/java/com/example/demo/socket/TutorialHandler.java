@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class TutorialHandler implements WebSocketHandler {
@@ -28,9 +29,9 @@ public class TutorialHandler implements WebSocketHandler {
         String data = (String) message.getPayload();
         log.info("Message: {}", data);
         session.getAttributes().put("REQUEST_TIME", System.currentTimeMillis());
-        session.sendMessage(new TextMessage("Started processing tutorial: " + session + " - " + data));
-        Thread.sleep(1000);
-        session.sendMessage(new TextMessage("Completed processing tutorial: " + data));
+//        session.sendMessage(new TextMessage("Started processing tutorial: " + session + " - " + data));
+//        Thread.sleep(1000);
+//        session.sendMessage(new TextMessage("Completed processing tutorial: " + data));
 
     }
 
@@ -52,17 +53,20 @@ public class TutorialHandler implements WebSocketHandler {
     }
 
 
-    @Scheduled(fixedRate = 3000)
+    @Scheduled(fixedRate = 1500)
     public void sendMessage() throws IOException {
 //        log.info("Scheduled sendMessage {}", sessions.size());
         for (WebSocketSession session : sessions) {
+            var random = ThreadLocalRandom.current();
             HelloRequest helloRequest = HelloRequest.newBuilder()
-                    .setTime(123456789)
+                    .setTime(random.nextInt())
                     .setMessage("Hello from " + session.getId())
                     .build();
             String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
             TextMessage msg = new TextMessage("message|" + asBase64);
-            sendMessage(session, msg);
+//            sendMessage(session, msg);
+            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
+            session.sendMessage(binaryMessage);
         }
         closeSession();
     }

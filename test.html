@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<style>
+    #customers {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    #customers td, #customers th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+    #customers tr:hover {background-color: #ddd;}
+
+    #customers th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #04AA6D;
+        color: white;
+    }
+</style>
+<body>
+
+<h2>Demo web socket</h2>
+<table id="customers">
+    <tr>
+        <th>Time</th>
+        <th>Message</th>
+    </tr>
+    <tr>
+        <td id="time">Loading...</td>
+        <td id="message">Loading...</td>
+    </tr>
+</table>
+
+<script src="//cdn.jsdelivr.net/npm/protobufjs@7.X.X/dist/protobuf.js"></script>
+<script>
+    async function decodeProto(buffer) {
+        console.log("Buffer decodeProto ", buffer);
+        const arr = new Uint8Array(await buffer.arrayBuffer());
+        protobuf.load("hello.proto", function (err, root) {
+            if (err)
+                throw err;
+            var HelloRequest = root.lookupType("HelloRequest");
+            var message = HelloRequest.decode(arr);
+            var object = HelloRequest.toObject(message);
+            console.log("Object decodeProto ", object);
+            document.getElementById("time").style.backgroundColor = "yellow";
+            setTimeout(() => {
+                document.getElementById("time").style.backgroundColor = "#f2f2f2";
+                document.getElementById("time").innerHTML = object.time;
+                document.getElementById("message").innerHTML = object.message;
+            }, 200);
+
+        });
+    }
+
+    // Create WebSocket connection.
+    const socket = new WebSocket("wss://localhost:8081/tutorial");
+
+    // Connection opened
+    socket.addEventListener("open", (event) => {
+        socket.send("Hello Server!");
+    });
+
+    // Listen for messages
+    socket.addEventListener("message", (event) => {
+        var data = decodeProto(event.data);
+    });
+</script>
+
+</body>
+</html>
