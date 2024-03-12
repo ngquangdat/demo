@@ -1,5 +1,6 @@
 package com.example.demo.grpc;
 
+import com.example.demo.dummy.StockRepository;
 import com.example.demo.ws.proto.HelloRequest;
 import com.example.demo.ws.proto.HelloResponse;
 import com.example.demo.ws.proto.HelloServiceGrpc;

@@ -1,4 +1,4 @@
-package com.example.demo.grpc;
+package com.example.demo.dummy;
 
 import java.util.concurrent.ThreadLocalRandom;
 

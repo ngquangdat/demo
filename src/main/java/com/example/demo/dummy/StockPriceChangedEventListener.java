@@ -1,4 +1,4 @@
-package com.example.demo.grpc;
+package com.example.demo.dummy;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;

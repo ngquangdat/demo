@@ -1,5 +1,6 @@
 package com.example.demo.socket;
 
+import com.example.demo.model.dto.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;

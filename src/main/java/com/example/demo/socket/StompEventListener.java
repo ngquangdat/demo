@@ -1,5 +1,6 @@
 package com.example.demo.socket;
 
+import com.example.demo.model.dto.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -31,6 +32,7 @@ public class StompEventListener {
 
             Message message = new Message();
             message.setFrom(username);
+            message.setText("Disconnected from " + username);
             messagingTemplate.convertAndSend("/topic/public", message);
         }
     }

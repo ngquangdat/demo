@@ -1,7 +1,6 @@
-package com.example.demo.grpc;
+package com.example.demo.dummy;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public enum StockRepository {
     INSTANCE;

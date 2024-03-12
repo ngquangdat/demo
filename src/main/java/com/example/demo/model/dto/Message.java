@@ -1,4 +1,4 @@
-package com.example.demo.socket;
+package com.example.demo.model.dto;
 
 import lombok.Data;
 
