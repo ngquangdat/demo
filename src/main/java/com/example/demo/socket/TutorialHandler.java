@@ -1,9 +1,12 @@
 package com.example.demo.socket;
 
+import com.example.demo.redis.MessagePublisher;
 import com.example.demo.ws.proto.HelloRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.*;
 
 import java.io.IOException;
@@ -13,7 +16,11 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
+@Service
 public class TutorialHandler implements WebSocketHandler {
+
+    @Autowired
+    private MessagePublisher messagePublisher;
 
     private final List<WebSocketSession> sessions = new ArrayList<>();
 
@@ -25,14 +32,12 @@ public class TutorialHandler implements WebSocketHandler {
     }
 
     @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
         String data = (String) message.getPayload();
         log.info("Message: {}", data);
         session.getAttributes().put("REQUEST_TIME", System.currentTimeMillis());
-//        session.sendMessage(new TextMessage("Started processing tutorial: " + session + " - " + data));
-//        Thread.sleep(1000);
-//        session.sendMessage(new TextMessage("Completed processing tutorial: " + data));
 
+        messagePublisher.publish(data);
     }
 
     @Override
@@ -69,6 +74,13 @@ public class TutorialHandler implements WebSocketHandler {
             session.sendMessage(binaryMessage);
         }
         closeSession();
+    }
+
+    public void boardCastMessage(String message) throws IOException {
+        for (WebSocketSession session : sessions) {
+            TextMessage textMessage = new TextMessage(message);
+            session.sendMessage(textMessage);
+        }
     }
 
     private void sendMessage(WebSocketSession session, TextMessage msg) throws IOException {
