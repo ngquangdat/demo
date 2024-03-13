@@ -71,7 +71,7 @@
 
         // Listen for messages
         socket.addEventListener("message", (event) => {
-            var data = decodeProto(event.data);
+            decodeProto(event.data);
         });
 
         socket.addEventListener("close", (event) => {
