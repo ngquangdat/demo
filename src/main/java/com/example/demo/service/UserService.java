@@ -1,43 +1,15 @@
 package com.example.demo.service;
 
-import com.example.demo.constant.ResponseStatusConstant;
-import com.example.demo.exception.BusinessException;
-import com.example.demo.model.entity.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.util.BCryptUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.Optional;
+import com.example.demo.model.dto.SignInResponse;
+import com.example.demo.model.entity.Account;
 
-@Service
-public class UserService {
+public interface UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    Account getUser(String username, String password);
 
-    @Autowired
-    private JwtService jwtService;
+    Account createUser(String username, String password, String phone, Integer point);
 
-    public User getUser(String username, String password){
-        Optional<User> opUser = userRepository.getByUsername(username);
-        if(opUser.isPresent()){
-            User user = opUser.get();
-            if(BCryptUtil.check(password, user.getPassword())){
-                return user;
-            }
-        }
-        throw new BusinessException(ResponseStatusConstant.SIGNIN_FAILED, null, null);
-    }
+    SignInResponse signIn(String username, String password);
 
-    public User createUser(String username, String password){
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(BCryptUtil.hash(password));
-        return userRepository.save(user);
-    }
-
-    public String signIn(String username, String password){
-        User user = getUser(username, password);
-        return jwtService.generateTokenLogin(user);
-    }
+    SignInResponse signInRefreshToken(String accountId, String refreshToken);
 }

@@ -1,15 +1,15 @@
 package com.example.demo.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
-import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
 @Data
 @Table
 @Entity
-public class User {
+public class Account {
     @Id
     @Column
     private String id;
