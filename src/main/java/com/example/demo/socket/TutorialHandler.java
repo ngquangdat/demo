@@ -78,8 +78,13 @@ public class TutorialHandler implements WebSocketHandler {
 
     public void boardCastMessage(String message) throws IOException {
         for (WebSocketSession session : sessions) {
-            TextMessage textMessage = new TextMessage(message);
-            session.sendMessage(textMessage);
+            var random = ThreadLocalRandom.current();
+            HelloRequest helloRequest = HelloRequest.newBuilder()
+                    .setTime(random.nextInt())
+                    .setMessage("Hello from " + message)
+                    .build();
+            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
+            session.sendMessage(binaryMessage);
         }
     }
 
