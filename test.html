@@ -50,18 +50,21 @@
             var message = HelloRequest.decode(arr);
             var object = HelloRequest.toObject(message);
             console.log("Object decodeProto ", object);
-            document.getElementById("time").style.backgroundColor = "yellow";
-            setTimeout(() => {
-                if (document.getElementById("time").value !== object.time) {
+            if (document.getElementById("time").innerHTML !== object.time) {
+                document.getElementById("time").style.backgroundColor = "yellow";
+                setTimeout(() => {
                     document.getElementById("time").style.backgroundColor = "#f2f2f2";
                     document.getElementById("time").innerHTML = object.time;
-                }
-                if (document.getElementById("message").value !== object.message) {
+                }, 200);
+            }
+            if (document.getElementById("message").innerHTML !== object.message) {
+                document.getElementById("message").style.backgroundColor = "yellow";
+                setTimeout(() => {
                     document.getElementById("message").style.backgroundColor = "#f2f2f2";
                     document.getElementById("message").innerHTML = object.message;
-                }
+                }, 200);
+            }
 
-            }, 200);
 
         });
     }
