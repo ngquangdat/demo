@@ -1,7 +1,7 @@
 package com.example.demo.socket;
 
 import com.example.demo.redis.MessagePublisher;
-import com.example.demo.ws.proto.HelloRequest;
+//import com.example.demo.ws.proto.HelloRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,15 +63,15 @@ public class TutorialHandler implements WebSocketHandler {
 //        log.info("Scheduled sendMessage {}", sessions.size());
         for (WebSocketSession session : sessions) {
             var random = ThreadLocalRandom.current();
-            HelloRequest helloRequest = HelloRequest.newBuilder()
-                    .setTime(random.nextInt())
-                    .setMessage("Hello from " + session.getId())
-                    .build();
-            String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
-            TextMessage msg = new TextMessage("message|" + asBase64);
-//            sendMessage(session, msg);
-            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
-            session.sendMessage(binaryMessage);
+//            HelloRequest helloRequest = HelloRequest.newBuilder()
+//                    .setTime(random.nextInt())
+//                    .setMessage("Hello from " + session.getId())
+//                    .build();
+//            String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
+//            TextMessage msg = new TextMessage("message|" + asBase64);
+////            sendMessage(session, msg);
+//            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
+//            session.sendMessage(binaryMessage);
         }
         closeSession();
     }
@@ -79,12 +79,12 @@ public class TutorialHandler implements WebSocketHandler {
     public void boardCastMessage(String message) throws IOException {
         for (WebSocketSession session : sessions) {
             var random = ThreadLocalRandom.current();
-            HelloRequest helloRequest = HelloRequest.newBuilder()
-                    .setTime(random.nextInt())
-                    .setMessage("Hello from " + message)
-                    .build();
-            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
-            session.sendMessage(binaryMessage);
+//            HelloRequest helloRequest = HelloRequest.newBuilder()
+//                    .setTime(random.nextInt())
+//                    .setMessage("Hello from " + message)
+//                    .build();
+//            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
+//            session.sendMessage(binaryMessage);
         }
     }
 
