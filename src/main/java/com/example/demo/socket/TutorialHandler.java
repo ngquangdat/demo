@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -22,7 +21,13 @@ public class TutorialHandler implements WebSocketHandler {
     @Autowired
     private MessagePublisher messagePublisher;
 
-    private final List<WebSocketSession> sessions = new ArrayList<>();
+    private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
+
+
+    public Set<WebSocketSession> getSessions() {
+        return Collections.unmodifiableSet(this.sessions);
+    }
+
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
