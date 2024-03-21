@@ -11,9 +11,9 @@ services:
     networks:
       - demo_network
     volumes:
-      - ./config:/opt/ngquangdat/demo/config
-    environment:
-      JAVA_OPTS: '-Dspring.config.additional-location=/opt/ngquangdat/demo/config/'
+      - ./config:/app/config
+#    environment:
+#      JAVA_OPTS: '-Dspring.config.additional-location=/opt/ngquangdat/demo/config/'
   redis:
     image: 'redis/redis-stack:latest'
     container_name: 'redis'
