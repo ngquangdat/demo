@@ -25,7 +25,7 @@ public class MessageSubscriber implements MessageListener {
         log.info("MessageSubscriber received: {}", message);
         try {
             String msg = objectMapper.readValue(message.getBody(), String.class);
-            tutorialHandler.boardCastMessage(msg);
+//            tutorialHandler.boardCastMessage(msg);
         } catch (IOException e) {
             log.error("MessageSubscriber onMessage error", e);
         }

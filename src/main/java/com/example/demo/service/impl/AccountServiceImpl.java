@@ -20,8 +20,8 @@ public class AccountServiceImpl implements UserService {
     @Autowired
     private AccountRepository accountRepository;
 
-    @Autowired
-    private JwtService jwtService;
+//    @Autowired
+//    private JwtService jwtService;
 
     @Autowired
     private RefreshTokenService refreshTokenService;
@@ -49,7 +49,7 @@ public class AccountServiceImpl implements UserService {
     public SignInResponse signIn(String username, String password){
         Account account = getUser(username, password);
         return SignInResponse.builder()
-                .accessToken(jwtService.generateTokenLogin(account))
+//                .accessToken(jwtService.generateTokenLogin(account))
                 .refreshToken(refreshTokenService.createRefreshToken(account.getId()))
                 .build();
     }
@@ -59,7 +59,7 @@ public class AccountServiceImpl implements UserService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new BusinessException(ResponseStatusConstant.SIGNIN_FAILED, null));
         return SignInResponse.builder()
-                .accessToken(jwtService.generateTokenLogin(account))
+//                .accessToken(jwtService.generateTokenLogin(account))
                 .refreshToken(refreshToken)
                 .build();
     }
