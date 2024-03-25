@@ -28,6 +28,7 @@ public class DemoController {
 
     @GetMapping("/account")
     public Object getAccounts() {
+        log.info("getAccounts");
         return ResponseFactory.success(accountRepository.findAll());
     }
 

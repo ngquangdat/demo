@@ -1,7 +1,7 @@
 package com.example.demo.socket;
 
 import com.example.demo.redis.MessagePublisher;
-import com.example.demo.ws.proto.HelloRequest;
+//import com.example.demo.ws.proto.HelloRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -22,7 +21,13 @@ public class TutorialHandler implements WebSocketHandler {
     @Autowired
     private MessagePublisher messagePublisher;
 
-    private final List<WebSocketSession> sessions = new ArrayList<>();
+    private final Set<WebSocketSession> sessions = new CopyOnWriteArraySet<>();
+
+
+    public Set<WebSocketSession> getSessions() {
+        return Collections.unmodifiableSet(this.sessions);
+    }
+
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -42,7 +47,7 @@ public class TutorialHandler implements WebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
-        log.info("Exception occured: {} on session: {}", exception.getMessage(), session.getId());
+        log.info("Exception occurred: {} on session: {}", exception.getMessage(), session.getId());
 
     }
 
@@ -63,23 +68,28 @@ public class TutorialHandler implements WebSocketHandler {
 //        log.info("Scheduled sendMessage {}", sessions.size());
         for (WebSocketSession session : sessions) {
             var random = ThreadLocalRandom.current();
-            HelloRequest helloRequest = HelloRequest.newBuilder()
-                    .setTime(random.nextInt())
-                    .setMessage("Hello from " + session.getId())
-                    .build();
-            String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
-            TextMessage msg = new TextMessage("message|" + asBase64);
-//            sendMessage(session, msg);
-            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
-            session.sendMessage(binaryMessage);
+//            HelloRequest helloRequest = HelloRequest.newBuilder()
+//                    .setTime(random.nextInt())
+//                    .setMessage("Hello from " + session.getId())
+//                    .build();
+//            String asBase64 = Base64.getEncoder().encodeToString(helloRequest.toByteArray());
+//            TextMessage msg = new TextMessage("message|" + asBase64);
+////            sendMessage(session, msg);
+//            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
+//            session.sendMessage(binaryMessage);
         }
         closeSession();
     }
 
     public void boardCastMessage(String message) throws IOException {
         for (WebSocketSession session : sessions) {
-            TextMessage textMessage = new TextMessage(message);
-            session.sendMessage(textMessage);
+            var random = ThreadLocalRandom.current();
+//            HelloRequest helloRequest = HelloRequest.newBuilder()
+//                    .setTime(random.nextInt())
+//                    .setMessage("Hello from " + message)
+//                    .build();
+//            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
+//            session.sendMessage(binaryMessage);
         }
     }
 
