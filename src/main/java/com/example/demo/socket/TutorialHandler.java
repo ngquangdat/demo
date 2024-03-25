@@ -90,6 +90,8 @@ public class TutorialHandler implements WebSocketHandler {
 //                    .build();
 //            BinaryMessage binaryMessage = new BinaryMessage(helloRequest.toByteArray());
 //            session.sendMessage(binaryMessage);
+            TextMessage textMessage = new TextMessage(message);
+            session.sendMessage(textMessage);
         }
     }
 
