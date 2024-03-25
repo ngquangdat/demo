@@ -1,10 +1,10 @@
-FROM maven:3.9.6-amazoncorretto-17-al2023 AS MAVEN_BUILD
+FROM maven:3.9.6-amazoncorretto-21-al2023 AS MAVEN_BUILD
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-FROM openjdk:17-jdk-alpine
+FROM openjdk:21-oracle
 WORKDIR /app
 COPY --from=MAVEN_BUILD /app/target/*.jar demo.jar
 EXPOSE 8081
