@@ -47,7 +47,7 @@ public class TutorialHandler implements WebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
-        log.info("Exception occured: {} on session: {}", exception.getMessage(), session.getId());
+        log.info("Exception occurred: {} on session: {}", exception.getMessage(), session.getId());
 
     }
 

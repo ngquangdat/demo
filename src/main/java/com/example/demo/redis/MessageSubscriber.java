@@ -17,13 +17,11 @@ public class MessageSubscriber implements MessageListener {
     @Autowired
     private TutorialHandler tutorialHandler;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Override
     public void onMessage(Message message, byte[] pattern) {
         log.info("MessageSubscriber received: {}", message);
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
             String msg = objectMapper.readValue(message.getBody(), String.class);
             tutorialHandler.boardCastMessage(msg);
         } catch (IOException e) {
