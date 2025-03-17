@@ -1,40 +1,41 @@
 package com.example.demo.controller;
 
-import com.example.demo.factory.response.ResponseFactory;
-import com.example.demo.repository.CityRepository;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.JwtService;
-import com.example.demo.service.UserService;
+import com.example.demo.service.BankNameClassifierService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class DemoController {
-    @Autowired
-    private JwtService jwtService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private CityRepository cityRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private BankNameClassifierService bankNameClassifierService;
 
     @GetMapping
     public String hello() {
         return "Hello world!";
     }
 
-    @GetMapping("/city")
-    public Object getCities() {
-        return ResponseFactory.success(cityRepository.findAll());
+    @GetMapping("/test")
+    @SneakyThrows
+    public String test(@RequestParam String text) {
+        return bankNameClassifierService.classify(text);
     }
 
-    @GetMapping("/user")
-    public Object getUsers() {
-        return ResponseFactory.success(userRepository.findAll());
+    @PostMapping("/train-more")
+    @SneakyThrows
+    public void trainMore(@RequestParam String text,
+                          @RequestParam String classValue) {
+        bankNameClassifierService.trainMore(text, classValue);
+    }
+
+    @PostMapping("/remove-train")
+    @SneakyThrows
+    public void removeTrainingData(@RequestParam String text,
+                                   @RequestParam String classValue) {
+        bankNameClassifierService.removeTrainingData(text, classValue);
     }
 }
