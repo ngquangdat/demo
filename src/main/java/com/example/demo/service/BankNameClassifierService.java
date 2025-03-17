@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.model.dto.TrainingData;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,23 +13,36 @@ import weka.core.Instances;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class BankNameClassifierService {
 
-    private FilteredClassifier classifier;
     private Instances trainingData;
-    private final ArrayList<String> classValues = new ArrayList<>();
+    private FilteredClassifier classifier;
+    private List<TrainingData> data = new ArrayList<>();
 
     public BankNameClassifierService() {
+        getDataDefault();
         create();
     }
 
-    private ArrayList<Attribute> createAttributeInfo() {
-        classValues.add("TCB");
-        classValues.add("VCB");
-        classValues.add("OTHER");
+    private void getDataDefault() {
+        data.add(new TrainingData("tcb", "TCB"));
+        data.add(new TrainingData("tcb", "TCB"));
+        data.add(new TrainingData("t c b", "TCB"));
+        data.add(new TrainingData("techcombank", "TCB"));
+        data.add(new TrainingData("tech com bank", "TCB"));
+        data.add(new TrainingData("techcom", "TCB"));
+        data.add(new TrainingData("ngân hàng techcombank", "TCB"));
+        data.add(new TrainingData("v c b", "VCB"));
+        data.add(new TrainingData("ngân hàng vcb", "VCB"));
+        data.add(new TrainingData("vietcombank", "VCB"));
+    }
+
+    private ArrayList<Attribute> createAttributeInfo(ArrayList<String> classValues) {
         Attribute classAttribute = new Attribute("class", classValues);
         Attribute textAttribute = new Attribute("text", (ArrayList<String>) null);
 
@@ -40,10 +54,18 @@ public class BankNameClassifierService {
 
     @SneakyThrows
     private void create() {
-        ArrayList<Attribute> attributes = createAttributeInfo();
+        ArrayList<String> classValues = data.stream()
+                .map(TrainingData::getClassValue)
+                .distinct()
+                .collect(Collectors.toCollection(ArrayList::new));
+        classValues.add("OTHER");
+        ArrayList<Attribute> attributes = createAttributeInfo(classValues);
         trainingData = new Instances("BankNames", attributes, 0);
         trainingData.setClassIndex(1);
-        addTrainingInstance();
+        List<Instance> instances = data.stream()
+                .map(d -> createTrainingInstance(trainingData, d.getText(), d.getClassValue()))
+                .collect(Collectors.toCollection(ArrayList::new));
+        trainingData.addAll(instances);
         // Tạo filter StringToWordVector
         StringToWordVector filter = new StringToWordVector();
         filter.setInputFormat(trainingData);
@@ -59,24 +81,12 @@ public class BankNameClassifierService {
         classifier.buildClassifier(trainingData);
     }
 
-    private void addTrainingInstance() {
-        addTrainingInstance("tcb", "TCB");
-        addTrainingInstance("t c b", "TCB");
-        addTrainingInstance("techcombank", "TCB");
-        addTrainingInstance("tech com bank", "TCB");
-        addTrainingInstance("techcom", "TCB");
-        addTrainingInstance("ngân hàng techcombank", "TCB");
-        addTrainingInstance("v c b", "VCB");
-        addTrainingInstance("ngân hàng vcb", "VCB");
-        addTrainingInstance("vietcombank", "VCB");
-    }
-
-    public void addTrainingInstance(String text, String classValue) {
+    public Instance createTrainingInstance(Instances trainingData, String text, String classValue) {
         Instance instance = new DenseInstance(2);
         instance.setValue(trainingData.attribute(0), text);
         instance.setValue(trainingData.attribute(1), classValue);
         instance.setDataset(trainingData);
-        trainingData.add(instance);
+        return instance;
     }
 
     public String classify(String input) throws Exception {
@@ -89,10 +99,12 @@ public class BankNameClassifierService {
     }
 
     public void trainMore(String text, String classValue) throws Exception {
-
+        data.add(new TrainingData(text, classValue));
+        create();
     }
 
     public void removeTrainingData(String text, String classValue) throws Exception {
-
+        data.remove(new TrainingData(text, classValue));
+        create();
     }
 }
