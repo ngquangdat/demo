@@ -98,12 +98,12 @@ public class BankNameClassifierService {
         return trainingData.classAttribute().value((int) prediction);
     }
 
-    public void trainMore(String text, String classValue) throws Exception {
+    public void trainMore(String text, String classValue) {
         data.add(new TrainingData(text, classValue));
         create();
     }
 
-    public void removeTrainingData(String text, String classValue) throws Exception {
+    public void removeTrainingData(String text, String classValue) {
         data.remove(new TrainingData(text, classValue));
         create();
     }
