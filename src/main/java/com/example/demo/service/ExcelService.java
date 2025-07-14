@@ -38,7 +38,7 @@ public class ExcelService {
         String[] columns = {
                 "ID", "Main Volume", "Main Value", "Big Lot Volume", "Big Lot Value",
                 "Buying Volume", "Buying Order", "Selling Volume", "Selling Order",
-                "Total Volume", "Total Value", "Record Date"
+                "Total Volume", "Total Value", "Record Date", "Created Date"
         };
 
         // Style for header
@@ -78,6 +78,11 @@ public class ExcelService {
             row.createCell(11).setCellValue(
                     report.getRecordDate() != null
                             ? report.getRecordDate().format(dateFormatter)
+                            : ""
+            );
+            row.createCell(12).setCellValue(
+                    report.getCreatedDate() != null
+                            ? report.getCreatedDate().format(dateFormatter)
                             : ""
             );
         }

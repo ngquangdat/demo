@@ -45,4 +45,7 @@ public class TradingReport {
 
     @Column(name = "record_date")
     private LocalDateTime recordDate;
+
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
 }
