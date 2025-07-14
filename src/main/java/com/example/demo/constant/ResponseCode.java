@@ -1,6 +1,6 @@
 package com.example.demo.constant;
 
-public class ResponseStatusConstant {
+public class ResponseCode {
     public static final String SUCCESS = "00";
     public static final String SIGNIN_FAILED = "01";
     public static final String USER_EXISTED = "02";

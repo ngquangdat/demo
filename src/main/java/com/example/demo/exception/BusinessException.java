@@ -1,17 +1,19 @@
 package com.example.demo.exception;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class BusinessException extends RuntimeException {
     private String code;
     private String message;
-    private Object data;
+    private Object[] args;
 
-    public BusinessException(String code, String message, Object data) {
+    public BusinessException(String code, String message, Object... args) {
         super();
         this.code = code;
         this.message = message;
-        this.data = data;
+        this.args = args;
     }
 }
