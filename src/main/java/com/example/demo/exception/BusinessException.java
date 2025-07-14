@@ -7,13 +7,11 @@ import lombok.Setter;
 @Setter
 public class BusinessException extends RuntimeException {
     private String code;
-    private String message;
     private Object[] args;
 
-    public BusinessException(String code, String message, Object... args) {
+    public BusinessException(String code, Object... args) {
         super();
         this.code = code;
-        this.message = message;
         this.args = args;
     }
 }

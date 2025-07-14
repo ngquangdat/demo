@@ -48,6 +48,8 @@ public class SyncDataService {
     private final JdbcTemplate jdbcTemplate;
     private final ApplicationEventPublisher eventPublisher;
     private final ApiSyncConfigRepository apiSyncConfigRepository;
+    private final CounterService counterService;
+
 
     private static final String PAGE = "PAGE";
     private static final String SIZE = "SIZE";
@@ -65,6 +67,7 @@ public class SyncDataService {
                 .orElseThrow(() -> new BusinessException(ResponseCode.BAD_REQUEST, syncCode));
         List<ApiSyncParamConfig> paramConfig = config.getParamConfigs();
         try {
+            counterService.resetCounter(syncCode);
             cleanBeforeSync(config);
 
             int page = paramConfig.stream()
@@ -98,14 +101,12 @@ public class SyncDataService {
 
                 page++;
             } while (totalPage != 0 && page <= totalPage);
-            config.setStatus("SUCCESS");
         } catch (Exception e) {
             log.warn("Error when sync data {}", syncCode);
             config.setStatus("ERROR");
             throw e;
         } finally {
             log.info("Sync data {} done", syncCode);
-            publishEventSync(syncCode, config.getStatus());
         }
     }
 
@@ -122,11 +123,15 @@ public class SyncDataService {
         if (records.isEmpty()) {
             return 0;
         }
-
+        counterService.incrementCounter(task.getSyncCode(), (long) records.size());
         // Parse data
         List<Map<String, Object>> recordsToDb = parseData(task.getConfig().getFieldMappings(), records, jsonResponse);
         // build và chạy insert sql
         batchUpsertSql(task.getConfig(), recordsToDb);
+        if (getTotalCount(task.getConfig(), jsonResponse) == 0
+                || getTotalCount(task.getConfig(), jsonResponse) == counterService.getCounterValue(task.getSyncCode())) {
+            publishEventSync(task.getSyncCode(), "SUCCESS");
+        }
         return getTotalPage(task.getConfig(), jsonResponse);
     }
 
@@ -172,7 +177,7 @@ public class SyncDataService {
         return recordsToDb;
     }
 
-    private Integer getTotalPage(ApiSyncConfig config, String jsonResponse) {
+    private int getTotalPage(ApiSyncConfig config, String jsonResponse) {
         try {
             return JsonPath.parse(jsonResponse).read(config.getTotalPageResponsePath());
         } catch (Exception ignored) {
@@ -181,7 +186,7 @@ public class SyncDataService {
         return 0;
     }
 
-    private Integer getTotalCount(ApiSyncConfig config, String jsonResponse) {
+    private long getTotalCount(ApiSyncConfig config, String jsonResponse) {
         try {
             return JsonPath.parse(jsonResponse).read(config.getTotalCountResponsePath());
         } catch (Exception ignored) {

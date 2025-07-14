@@ -38,3 +38,10 @@ CREATE TABLE api_sync_param_config
     operation     text NULL,
     CONSTRAINT api_sync_param_config_pkey PRIMARY KEY (id)
 );
+
+CREATE TABLE counter
+(
+    id            BIGSERIAL PRIMARY KEY,
+    counter_name  TEXT UNIQUE NOT NULL,
+    counter_value BIGINT      NOT NULL DEFAULT 0
+);
