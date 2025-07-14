@@ -56,6 +56,9 @@ public class ApiSyncConfig {
     @Column(name = "parallel")
     private String parallel;
 
+    @Column(name = "cron")
+    private String cron;
+
     @ToString.Exclude
     @OneToMany(mappedBy = "apiSyncConfig", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ApiSyncFieldMapping> fieldMappings;

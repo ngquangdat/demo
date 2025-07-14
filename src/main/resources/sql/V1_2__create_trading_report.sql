@@ -11,7 +11,8 @@ CREATE TABLE trading_report
     selling_order  text,
     total_volume   text,
     total_value    text,
-    record_date    timestamp
+    record_date    timestamp,
+    created_date    timestamp
 );
 
 CREATE TABLE trading_report_odd
@@ -27,5 +28,6 @@ CREATE TABLE trading_report_odd
     selling_order  text,
     total_volume   text,
     total_value    text,
-    record_date    timestamp
+    record_date    timestamp,
+    created_date    timestamp
 );

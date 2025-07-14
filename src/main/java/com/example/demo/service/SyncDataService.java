@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,6 +56,7 @@ public class SyncDataService {
     private static final String SIZE = "SIZE";
     private static final String OP_LOCAL_DATE_YYYY_MM_DD = "#LOCAL_DATE_YYYY_MM_DD";
     private static final String LOCAL_DATE_YYYY_MM_DD_PRE_1 = "#LOCAL_DATE_YYYY_MM_DD_PRE_1";
+    private static final String LOCAL_DATE_YYYY_MM_DD_PRE_WORK_1 = "#LOCAL_DATE_YYYY_MM_DD_PRE_WORK_1";
     private static final String OP_LOCAL_DATE_TIME = "#LOCAL_DATE_TIME";
     private static final String OP_JSON_PATH_ALL = "#JSON_PATH_ALL";
     private static final String OP_UPPER_CASE = "#UPPER_CASE";
@@ -62,7 +64,9 @@ public class SyncDataService {
     private static final String OP_NUMBER = "#NUMBER";
 
     @Async
+    @Transactional
     public void syncData(String syncCode) {
+        log.info("syncData {}", syncCode);
         ApiSyncConfig config = apiSyncConfigRepository.findBySyncCode(syncCode)
                 .orElseThrow(() -> new BusinessException(ResponseCode.BAD_REQUEST, syncCode));
         List<ApiSyncParamConfig> paramConfig = config.getParamConfigs();
@@ -215,6 +219,9 @@ public class SyncDataService {
                             if (LOCAL_DATE_YYYY_MM_DD_PRE_1.equalsIgnoreCase(config.getOperation())) {
                                 return LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
                             }
+                            if (LOCAL_DATE_YYYY_MM_DD_PRE_WORK_1.equalsIgnoreCase(config.getOperation())) {
+                                return getPreviousWorkDay();
+                            }
                             return config.getDefaultValue();
                         }
                 ));
@@ -251,6 +258,9 @@ public class SyncDataService {
         if (OP_LOCAL_DATE_TIME.equalsIgnoreCase(mapping.getOperation())) {
             return LocalDateTime.now();
         }
+        if (LOCAL_DATE_YYYY_MM_DD_PRE_WORK_1.equalsIgnoreCase(mapping.getOperation())) {
+            return getPreviousWorkDay();
+        }
         if (OP_JSON_PATH_ALL.equalsIgnoreCase(mapping.getOperation())) {
             return getFieldValue(mapping, jsonResponse);
         }
@@ -264,6 +274,14 @@ public class SyncDataService {
             return (fieldValue instanceof String) ? new BigDecimal(fieldValue.toString()) : fieldValue;
         }
         return fieldValue;
+    }
+
+    private String getPreviousWorkDay() {
+        LocalDate date = LocalDate.now().minusDays(1);
+        while (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            date = date.minusDays(1);
+        }
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
     }
 
     public void cleanBeforeSync(ApiSyncConfig config) {

@@ -14,6 +14,7 @@ CREATE TABLE api_sync_config
     clean_condition           text NULL,
     upsert_key                text NULL,
     parallel                  text NULL,
+    cron                      text NULL,
     CONSTRAINT api_sync_config_pkey PRIMARY KEY (id)
 );
 
