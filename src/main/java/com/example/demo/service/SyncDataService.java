@@ -62,6 +62,8 @@ public class SyncDataService {
     private static final String OP_UPPER_CASE = "#UPPER_CASE";
     private static final String OP_LOWER_CASE = "#LOWER_CASE";
     private static final String OP_NUMBER = "#NUMBER";
+    private static final String OP_1000_VND = "#1000_VND";
+
 
     @Async
     @Transactional
@@ -272,6 +274,15 @@ public class SyncDataService {
         }
         if (OP_NUMBER.equalsIgnoreCase(mapping.getOperation())) {
             return (fieldValue instanceof String) ? new BigDecimal(fieldValue.toString()) : fieldValue;
+        }
+        if (OP_1000_VND.equalsIgnoreCase(mapping.getOperation())) {
+            if (fieldValue instanceof String val) {
+                String cleanNumberStr = val.replace(",", "");
+                BigDecimal number = new BigDecimal(cleanNumberStr);
+                return number.multiply(new BigDecimal(1000)).stripTrailingZeros();
+            }
+
+            return fieldValue;
         }
         return fieldValue;
     }
