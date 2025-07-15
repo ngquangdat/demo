@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "trading_report")
-public class TradingReport {
+@Table(name = "trading_report_odd")
+public class TradingReportOdd {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

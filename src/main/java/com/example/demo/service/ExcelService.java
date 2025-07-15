@@ -99,10 +99,10 @@ public class ExcelService {
         }
     }
 
-    @EventListener
-    public void processSyncDataEvent(SyncDataEvent syncDataEvent) {
-        if ("TRADING_REPORT".equals(syncDataEvent.getSyncCode())) {
-            genTradingReport();
-        }
-    }
+//    @EventListener
+//    public void processSyncDataEvent(SyncDataEvent syncDataEvent) {
+//        if ("TRADING_REPORT".equals(syncDataEvent.getSyncCode())) {
+//            genTradingReport();
+//        }
+//    }
 }
